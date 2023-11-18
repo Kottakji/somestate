@@ -1,1 +1,1 @@
-export {state} from "./src/store/index"
+export {store} from "./src/store/index"

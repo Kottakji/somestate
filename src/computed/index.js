@@ -8,7 +8,7 @@ export function computed(dependencies, closure) {
   const result = store(closure(single ?  dependencies.get() : dependencies.map(dependency => dependency.get())))
 
   // Listen to the dependencies
-  single ? dependencies.listen(value => result.set(value)) : dependencies.map(dependency => dependency.listen((value) => result.set(value)))
+  single ? dependencies.listen(value => result.set(closure(value))) : dependencies.map(dependency => dependency.listen(() => result.set(closure(dependencies.map(dependency => dependency.get())))))
 
   return result;
 }
