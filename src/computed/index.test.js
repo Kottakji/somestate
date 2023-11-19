@@ -62,4 +62,25 @@ describe("Computed", () => {
 
     expect($even.get()).toEqual([1, 2, 3, 4]);
   });
+
+  test("We can listen to key changes", () => {
+    const $item = store({ x: 10, y: 10 });
+
+    const $double = computed(
+      $item,
+      (item) =>
+        Object.fromEntries(Object.entries(item).map(([k, v]) => [k, v * 2])),
+      ["x"],
+    );
+
+    expect($double.get()).toEqual({ x: 20, y: 20 });
+
+    $item.set({ x: 10, y: 12 });
+
+    expect($double.get()).toEqual({ x: 20, y: 20 });
+
+    $item.set({ x: 12, y: 12 });
+
+    expect($double.get()).toEqual({ x: 24, y: 24 });
+  });
 });
