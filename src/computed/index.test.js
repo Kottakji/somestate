@@ -50,9 +50,9 @@ describe("Computed", () => {
     const $items = store([1, 2, 3]);
     const $max = store(2);
 
-    const $even = computed([$items, $max], ([items, max]) =>
-      items.filter((item) => item < max),
-    );
+    const $even = computed([$items, $max], ([items, max]) => {
+      return items.filter((item) => item < max);
+    });
 
     $max.set(10);
 

@@ -60,12 +60,12 @@ import { computed, fetched } from 'simplestores'
 export const {data: $todo, loading, error} = fetched(`https://jsonplaceholder.typicode.com/todos/1`)
 
 // Only update when $item.completed has changed
-export const $isCompleted = computed($todo, ['completed'], todo => !!todo?.completed)
+export const $isCompleted = computed($todo, todo => !!todo?.completed, ['completed'])
 
 // Only listen when $item.completed has changed
-$item.listen(['completed'], ({data: item}) => {
+$item.listen(({data: item}) => {
     console.log(item)
-})
+}, ['completed'])
 ```
 
 ## Methods

@@ -13,7 +13,14 @@ export class Store {
   }
 
   set(newValue) {
-    if (equals(this.value, newValue)) return;
+    // Keep the old value for comparison
+    const oldValue = this.value;
+
+    // Only update when not the same
+    if (equals(oldValue, newValue)) return;
+
+    // Set the new value
+    this.value = newValue;
 
     this.listeners.map(({ closure, keys }) => {
       // Always call listener
@@ -24,18 +31,17 @@ export class Store {
       // Check if any of the keys has a change
       if (
         Array.isArray(keys) &&
-        keys.some((key) => !equals(this.value?.[key], newValue?.[key]))
+        keys.some((key) => !equals(oldValue?.[key], newValue?.[key]))
       ) {
         return void closure(newValue);
       }
 
       // Keys contains a single key
-      if (!equals(this.value?.[keys], newValue?.[keys])) {
+      if (!equals(oldValue?.[keys], newValue?.[keys])) {
         return void closure(newValue);
       }
     });
 
-    this.value = newValue;
   }
 
   listen(closure, keys = null) {
