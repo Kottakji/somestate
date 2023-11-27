@@ -2,9 +2,15 @@
 
 Intuitive and simple platform agnostic state management
 
+## Install
+
+`npm install somestate/react`
+
+## Packages
+
+React -  `https://github.com/Kottakji/somestate-react`
 
 ## Methods
-
 
 ### store
 
@@ -28,7 +34,6 @@ export const $items = store([1,2,3])
 export const $even = computed($items, items => items.filter(item => item % 2 == 0))
 ```
 
-
 ### fetched
 
 ```js
@@ -38,7 +43,6 @@ export const {data: $todos, loading, error} = fetched(`https://jsonplaceholder.t
 
 export const $completed = computed($todos, todos => todos.filter(todo => todo?.completed))
 ```
-
 
 ### listen
 
@@ -142,18 +146,4 @@ export const {data: $todos, loading, error} = fetched(`https://jsonplaceholder.t
 )
 
 export const $completed = computed($todos, todos => todos.filter(todo => todo?.completed))
-```
-
-## React
-
-`npm install somestate/react`
-
-```js
-import { useStore } from 'somestate/react'
-import { $profile } from '../stores/profile.js'
-
-export const Header = ({ postId }) => {
-  const profile = useStore($profile)
-  return <header>Hi, {profile.name}</header>
-}
 ```
