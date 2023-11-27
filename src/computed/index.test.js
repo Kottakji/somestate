@@ -1,6 +1,10 @@
-import { describe, expect, test, it } from "@jest/globals";
+import { describe, expect, test, it, afterEach, jest } from "@jest/globals";
 import { store } from "../store/index.js";
 import { computed } from "./index.js";
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
 describe("Computed", () => {
   test("We can compute a value from a different stores", () => {

@@ -1,5 +1,9 @@
-import { describe, expect, test } from "@jest/globals";
+import { afterEach, describe, expect, jest, test } from "@jest/globals";
 import { store } from "./index.js";
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
 describe("Store", () => {
   test("We can initialize store object", () => {
