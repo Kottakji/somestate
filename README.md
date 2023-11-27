@@ -1,4 +1,4 @@
-# Reactivestore
+# Somestate
 
 Intuitive and simple platform agnostic state management
 
@@ -9,7 +9,7 @@ Intuitive and simple platform agnostic state management
 ### store
 
 ```js
-import { store } from 'reactivestore'
+import { store } from 'somestate'
 
 export const $items = store([])
 
@@ -21,7 +21,7 @@ export function addItem(item) {
 ### computed
 
 ```js
-import { store, computed } from 'reactivestore'
+import { store, computed } from 'somestate'
 
 export const $items = store([1,2,3])
 
@@ -32,7 +32,7 @@ export const $even = computed($items, items => items.filter(item => item % 2 == 
 ### fetched
 
 ```js
-import { computed, fetched } from 'reactivestore'
+import { computed, fetched } from 'somestate'
 
 export const {data: $todos, loading, error} = fetched(`https://jsonplaceholder.typicode.com/todos`)
 
@@ -43,7 +43,7 @@ export const $completed = computed($todos, todos => todos.filter(todo => todo?.c
 ### listen
 
 ```js
-import { computed, fetched } from 'reactivestore'
+import { computed, fetched } from 'somestate'
 
 export const {data: $todos, loading, error} = fetched(`https://jsonplaceholder.typicode.com/todos`)
 
@@ -55,7 +55,7 @@ $todos.listen(({data: todos}) => {
 ### Only listen to key changes
 
 ```js
-import { computed, fetched } from 'reactivestore'
+import { computed, fetched } from 'somestate'
 
 export const {data: $todo, loading, error} = fetched(`https://jsonplaceholder.typicode.com/todos/1`)
 
@@ -73,7 +73,7 @@ $item.listen(({data: item}) => {
 ### State methods
 
 ```js
-import { store } from 'reactivestore'
+import { store } from 'somestate'
 
 export const $id = store();
 
@@ -85,7 +85,7 @@ $id.set()
 ### Fetched methods
 
 ```js
-import { store } from 'reactivestore'
+import { store } from 'somestate'
 
 export const $id = store();
 
@@ -98,7 +98,7 @@ $id.set()
 ### State options
 
 ```js
-import { fetched } from 'reactivestore'
+import { fetched } from 'somestate'
 
 export const {data: $todos, loading, error} = fetched(`https://jsonplaceholder.typicode.com/todos`)
 
@@ -114,7 +114,7 @@ $todos.delete()
 ### Fetcher options
 
 ```js
-import { computed, fetched } from 'reactivestore'
+import { computed, fetched } from 'somestate'
 
 export const {data: $todos, loading, error} = fetched(`https://jsonplaceholder.typicode.com/todos`,
     // Fetcher options
@@ -146,10 +146,10 @@ export const $completed = computed($todos, todos => todos.filter(todo => todo?.c
 
 ## React
 
-`npm install reactivestore/react`
+`npm install somestate/react`
 
 ```js
-import { useStore } from 'reactivestore/react'
+import { useStore } from 'somestate/react'
 import { $profile } from '../stores/profile.js'
 
 export const Header = ({ postId }) => {
