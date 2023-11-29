@@ -211,11 +211,11 @@ describe("Fetched", () => {
   });
 
   test("When the dependencies get updated, we should also update the fetched", (done) => {
-    const $true = store(false);
+    const $dependency = store(false);
     const $todo = fetched(
       `https://jsonplaceholder.typicode.com/todos/1`,
       {},
-      { dependencies: [$true] },
+      { dependencies: [$dependency] },
     );
 
     expect($todo.get()).toEqual(undefined);
@@ -225,6 +225,23 @@ describe("Fetched", () => {
     });
 
     // This should invoke the fetcher to refetch
-    $true.set(true)
+    $dependency.set(true)
   })
+
+  test("On the fetcher, we can clear the dependency listeners via clear()", () => {
+    const $dependency = store(false);
+    const $todo = fetched(
+      `https://jsonplaceholder.typicode.com/todos/1`,
+      {},
+      { dependencies: [$dependency] },
+    );
+
+    // This listener should always stay, it should only clear the dependency listeners set in the fetched constructor
+    $dependency.listen(() => {})
+
+    expect($dependency.listeners.length).toEqual(2)
+    $todo.clear();
+    expect($dependency.listeners.length).toEqual(1)
+  })
+
 });

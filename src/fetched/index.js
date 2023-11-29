@@ -95,6 +95,11 @@ class Fetcher extends Store {
     this.options = options;
     this.catchers = [];
 
+    /**
+     * @type {Listener[]}
+     */
+    this.dependencyListeners = []
+
     // Keep all default settings, but merge the new ones
     /**
      * @type {Settings}
@@ -110,9 +115,10 @@ class Fetcher extends Store {
     }
 
     // Listen to each dependency change (if it's a store)
-    settings.dependencies.map((dependency) => {
+    this.settings.dependencies.map((dependency) => {
       if (dependency instanceof Store) {
-        dependency.listen(() => this.fetch(options))
+        const listener = dependency.listen(() => this.fetch(options))
+        this.dependencyListeners.push(listener)
       }
     })
   }
@@ -185,6 +191,11 @@ class Fetcher extends Store {
       (dependency) =>
         !!(dependency instanceof Store ? dependency.get() : dependency),
     );
+  }
+
+  clear() {
+    // Clear dependency listeners
+    this.dependencyListeners.map((listener) => listener.unsubscribe())
   }
 }
 

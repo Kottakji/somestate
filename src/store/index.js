@@ -107,7 +107,7 @@ export class Store {
  * Represents a listener object.
  * @class
  */
-class Listener {
+export class Listener {
   constructor(id, closure, keys, unsubscribe) {
     this.id = id;
     this.closure = closure;
