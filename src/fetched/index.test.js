@@ -152,6 +152,18 @@ describe("Fetched", () => {
     $post.delete()
   });
 
+  test("We can create a store from a GET response", (done) => {
+    const $todo = fetched(`https://jsonplaceholder.typicode.com/todos/1`);
+
+    expect($todo.get()).toEqual(undefined);
+
+    $todo.listen((todo) => {
+      expect(todo?.id).toEqual(1);
+
+      done();
+    });
+  });
+
   // TODO what happens if it's not a 200?
 
   // TODO fetch dependencies?

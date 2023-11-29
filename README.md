@@ -130,12 +130,12 @@ export const {data: $todos, loading, error} = fetched(`https://jsonplaceholder.t
         // Fetcher
         fetcher: (url, options = {}) => fetch(url, options).then((r) => r.json()),
 
-        // Custom urls per method
-        getUrl: null,
-        patchUrl: null,
-        putUrl: null,
-        postUrl: null,
-        deleteUrl: null,
+        // Custom fetcher methods (can be used to set a custom url)
+        fetcher: (url, options) => getFetcher(url, 'GET', null, options),
+        patcher: (url, body, options) => getFetcher(url, 'PATCH', body, options),
+        putter: (url, body, options) => getFetcher(url, 'PUT', body, options),
+        poster: (url, body, options) => getFetcher(url, 'POST', body, options),
+        deleter: (url, body, options) => getFetcher(url, 'DELETE', null, options),
 
         // Refetch interval
         refetchInterval: 0,
