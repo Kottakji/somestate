@@ -1,4 +1,4 @@
-import {Store} from "../store/index.js";
+import { Store } from "../store/index.js";
 
 /**
  * Performs a fetch request using the provided parameters.
@@ -10,15 +10,18 @@ import {Store} from "../store/index.js";
  * @returns {Promise} - A Promise that resolves to the parsed JSON response.
  */
 export const getFetcher = async (url, method, body, options) => {
-  const response = await fetch(url, {...getOptions(method, body), ...options})
-  const data = await response.json()
+  const response = await fetch(url, {
+    ...getOptions(method, body),
+    ...options,
+  });
+  const data = await response.json();
 
   if (!response.ok) {
-    return new Error(response.status, data)
+    return new Error(response.status, data);
   }
 
   return data;
-}
+};
 
 /**
  * Generates options object for HTTP request.
@@ -30,9 +33,10 @@ export const getFetcher = async (url, method, body, options) => {
 export const getOptions = (method, body) => ({
   ...{
     method: method,
-    headers: {'Content-type': 'application/json'},
-  }, ...(body ? {body: JSON.stringify(body)} : null)
-})
+    headers: { "Content-type": "application/json" },
+  },
+  ...(body ? { body: JSON.stringify(body) } : null),
+});
 
 /**
  * Callback for adding two numbers.
@@ -57,12 +61,12 @@ export const getOptions = (method, body) => ({
  * @type {Settings}
  */
 const defaultSettings = {
-  fetcher: (url, options) => getFetcher(url, 'GET', null, options),
-  patcher: (url, body, options) => getFetcher(url, 'PATCH', body, options),
-  putter: (url, body, options) => getFetcher(url, 'PUT', body, options),
-  poster: (url, body, options) => getFetcher(url, 'POST', body, options),
-  deleter: (url, body, options) => getFetcher(url, 'DELETE', null, options),
-  catcher: (error) => () => void ({error}),
+  fetcher: (url, options) => getFetcher(url, "GET", null, options),
+  patcher: (url, body, options) => getFetcher(url, "PATCH", body, options),
+  putter: (url, body, options) => getFetcher(url, "PUT", body, options),
+  poster: (url, body, options) => getFetcher(url, "POST", body, options),
+  deleter: (url, body, options) => getFetcher(url, "DELETE", null, options),
+  catcher: (error) => () => void { error },
   refetchInterval: null,
   dependencies: [],
 };
@@ -86,26 +90,23 @@ class Fetcher extends Store {
    * @param {Settings} settings - Optional settings for the constructor.
    */
   constructor(url, options = {}, settings = {}) {
-    super(undefined)
+    super(undefined);
     this.url = url;
     this.options = options;
-    this.catchers = []
+    this.catchers = [];
 
     // Keep all default settings, but merge the new ones
     /**
      * @type {Settings}
      */
-    this.settings = {...defaultSettings, ...settings};
+    this.settings = { ...defaultSettings, ...settings };
 
     // Instantly call fetcher to set data
-    this.fetch(options)
+    this.fetch(options);
 
     // Should we refetch at x interval?
     if (settings?.refetchInterval) {
-      setInterval(
-        () => this.fetch(options),
-        settings.refetchInterval,
-      );
+      setInterval(() => this.fetch(options), settings.refetchInterval);
     }
   }
 
@@ -113,7 +114,14 @@ class Fetcher extends Store {
    * @param {object} options
    */
   fetch(options) {
-    this.hasTruthyDependencies() && this.settings.fetcher(this.url, options).then(result => result instanceof Error ? this.catchers.map(catcher => catcher(result)) : this.set(result))
+    this.hasTruthyDependencies() &&
+      this.settings
+        .fetcher(this.url, options)
+        .then((result) =>
+          result instanceof Error
+            ? this.catchers.map((catcher) => catcher(result))
+            : this.set(result),
+        );
   }
 
   /**
@@ -121,7 +129,9 @@ class Fetcher extends Store {
    * @param {object} [options={}]
    */
   post(body, options = {}) {
-    this.settings.poster(this.url, body, options).then(result => this.set(result));
+    this.settings
+      .poster(this.url, body, options)
+      .then((result) => this.set(result));
   }
 
   /**
@@ -129,7 +139,9 @@ class Fetcher extends Store {
    * @param {object} [options={}]
    */
   patch(body, options = {}) {
-    this.settings.patcher(this.url, body, options).then(result => this.set(result));
+    this.settings
+      .patcher(this.url, body, options)
+      .then((result) => this.set(result));
   }
 
   /**
@@ -137,21 +149,23 @@ class Fetcher extends Store {
    * @param {object} [options={}]
    */
   put(body, options = {}) {
-    this.settings.putter(this.url, body, options).then(result => this.set(result));
+    this.settings
+      .putter(this.url, body, options)
+      .then((result) => this.set(result));
   }
 
   /**
    * @param {object} [options={}]
    */
   delete(options = {}) {
-    this.settings.deleter(this.url, options).then(result => this.set(result));
+    this.settings.deleter(this.url, options).then((result) => this.set(result));
   }
 
   /**
    * @param {Catcher} closure
    */
   catch(closure) {
-    this.catchers.push(closure)
+    this.catchers.push(closure);
   }
 
   /**
@@ -160,7 +174,10 @@ class Fetcher extends Store {
    * @returns {boolean}
    */
   hasTruthyDependencies() {
-    return this.settings.dependencies.every(dependency => !!(dependency instanceof Store ? dependency.get() : dependency));
+    return this.settings.dependencies.every(
+      (dependency) =>
+        !!(dependency instanceof Store ? dependency.get() : dependency),
+    );
   }
 }
 
@@ -175,5 +192,3 @@ class Error {
     this.body = body;
   }
 }
-
-

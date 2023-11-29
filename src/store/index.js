@@ -67,7 +67,6 @@ export class Store {
         return void listener.closure(newValue);
       }
     });
-
   }
 
   /**
@@ -85,11 +84,13 @@ export class Store {
    * @returns {Listener} - A new instance of the Listener class.
    */
   listen(closure, keys = null) {
-    const id = generateId()
-    const listener = new Listener(id, closure, keys, () => this.unsubscribe(id))
+    const id = generateId();
+    const listener = new Listener(id, closure, keys, () =>
+      this.unsubscribe(id),
+    );
     this.listeners.push(listener);
 
-    return listener
+    return listener;
   }
 
   /**
@@ -98,7 +99,7 @@ export class Store {
    * @param {string} id - The ID of the listener to unsubscribe.
    */
   unsubscribe(id) {
-   this.listeners = this.listeners.filter(listener => listener.id !== id)
+    this.listeners = this.listeners.filter((listener) => listener.id !== id);
   }
 }
 
@@ -116,9 +117,14 @@ class Listener {
   }
 }
 
-function generateId () {
-  let d = new Date().getTime(), d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now() * 1000)) || 0;
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+function generateId() {
+  let d = new Date().getTime(),
+    d2 =
+      (typeof performance !== "undefined" &&
+        performance.now &&
+        performance.now() * 1000) ||
+      0;
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
     let r = Math.random() * 16;
     if (d > 0) {
       r = (d + r) % 16 | 0;
@@ -127,7 +133,7 @@ function generateId () {
       r = (d2 + r) % 16 | 0;
       d2 = Math.floor(d2 / 16);
     }
-    return (c === 'x' ? r : (r & 0x7 | 0x8)).toString(16);
+    return (c === "x" ? r : (r & 0x7) | 0x8).toString(16);
   });
 }
 

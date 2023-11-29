@@ -1,7 +1,7 @@
-import {describe, expect, test, it, jest, afterEach} from "@jest/globals";
-import {fetched} from "./index.js";
-import {computed} from "../computed/index.js";
-import {store} from "../store/index.js";
+import { describe, expect, test, it, jest, afterEach } from "@jest/globals";
+import { fetched } from "./index.js";
+import { computed } from "../computed/index.js";
+import { store } from "../store/index.js";
 
 jest.useFakeTimers();
 jest.spyOn(global, "setInterval");
@@ -26,7 +26,7 @@ describe("Fetched", () => {
   test("We can set fetch options", (done) => {
     const $todo = fetched(`https://jsonplaceholder.typicode.com/posts`, {
       method: "POST",
-      body: JSON.stringify({title: "foo", body: "bar", userId: 1}),
+      body: JSON.stringify({ title: "foo", body: "bar", userId: 1 }),
       headers: {
         "Content-type": "application/json; charset=UTF-8",
       },
@@ -45,7 +45,7 @@ describe("Fetched", () => {
     const $todo = fetched(
       `https://jsonplaceholder.typicode.com/todos/1`,
       {},
-      {fetcher: (url) => fetch(url).then(() => ({id: 2}))},
+      { fetcher: (url) => fetch(url).then(() => ({ id: 2 })) },
     );
 
     expect($todo.get()).toEqual(undefined);
@@ -90,54 +90,54 @@ describe("Fetched", () => {
   });
 
   test("We can use the fetch helper", () => {
-    const spy = jest.spyOn(global, 'fetch')
+    const spy = jest.spyOn(global, "fetch");
     const $post = fetched(`https://jsonplaceholder.typicode.com/posts/1`);
 
-    $post.fetch()
+    $post.fetch();
 
     // Because the result of the API call will be the same, the listen is only called once.
     // So we check if there have been 2 mock calls
-    expect(spy.mock.calls.length).toEqual(2)
+    expect(spy.mock.calls.length).toEqual(2);
   });
 
   test("We can use the patch helper", (done) => {
     const $post = fetched(`https://jsonplaceholder.typicode.com/posts/1`);
 
     $post.listen((post) => {
-      if (post?.title === 'Updated') {
+      if (post?.title === "Updated") {
         done();
       }
     });
 
-    $post.patch({...$post.get(), ...{title: 'Updated'}})
+    $post.patch({ ...$post.get(), ...{ title: "Updated" } });
   });
 
   test("We can use the put helper", (done) => {
     const $post = fetched(`https://jsonplaceholder.typicode.com/posts/1`);
 
     $post.listen((post) => {
-      if (post?.title === 'put') {
+      if (post?.title === "put") {
         done();
       }
     });
 
     $post.put({
-      title: 'put',
-    })
+      title: "put",
+    });
   });
 
   test("We can use the post helper", (done) => {
     const $post = fetched(`https://jsonplaceholder.typicode.com/posts`);
 
     $post.listen((post) => {
-      if (post?.title === 'foo') {
+      if (post?.title === "foo") {
         done();
       }
     });
 
     $post.post({
-      title: 'foo',
-    })
+      title: "foo",
+    });
   });
 
   test("We can use the delete helper", (done) => {
@@ -150,37 +150,49 @@ describe("Fetched", () => {
       }
     });
 
-    $post.delete()
+    $post.delete();
   });
 
   test("We can fetch only when dependencies are not falsy", () => {
-    const $todo = fetched(`https://jsonplaceholder.typicode.com/todos/1`, {}, {dependencies: [false]});
+    const $todo = fetched(
+      `https://jsonplaceholder.typicode.com/todos/1`,
+      {},
+      { dependencies: [false] },
+    );
 
     expect($todo.get()).toEqual(undefined);
 
     $todo.listen(() => {
-      throw new Error(`Shouldn't have been called`)
+      throw new Error(`Shouldn't have been called`);
     });
   });
 
   test("We can fetch only when dependencies are truthy", (done) => {
-    const $todo = fetched(`https://jsonplaceholder.typicode.com/todos/1`, {}, {dependencies: [true]});
+    const $todo = fetched(
+      `https://jsonplaceholder.typicode.com/todos/1`,
+      {},
+      { dependencies: [true] },
+    );
 
     expect($todo.get()).toEqual(undefined);
 
     $todo.listen(() => {
-      done()
+      done();
     });
   });
 
   test("We can fetch only when dependencies are truthy, using a store", (done) => {
-    const $true = store(true)
-    const $todo = fetched(`https://jsonplaceholder.typicode.com/todos/1`, {}, {dependencies: [$true]});
+    const $true = store(true);
+    const $todo = fetched(
+      `https://jsonplaceholder.typicode.com/todos/1`,
+      {},
+      { dependencies: [$true] },
+    );
 
     expect($todo.get()).toEqual(undefined);
 
     $todo.listen(() => {
-      done()
+      done();
     });
   });
 
@@ -188,13 +200,13 @@ describe("Fetched", () => {
     const $todo = fetched(`https://jsonplaceholder.typicode.com/wrong`);
 
     $todo.listen((data) => {
-      throw new Error(`Shouldn't have been called`)
+      throw new Error(`Shouldn't have been called`);
     });
 
     $todo.catch((error) => {
       expect(error.status).toEqual(404);
       expect(error.body).toEqual({});
       done();
-    })
+    });
   });
 });

@@ -6,7 +6,8 @@
   "type": "module",
   "module": "commonjs",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "prettier": "prettier src/ --write"
   },
   "repository": {
     "type": "git",
