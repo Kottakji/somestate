@@ -1,6 +1,6 @@
 {
   "name": "somestate",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Simple state management",
   "main": "index.js",
   "type": "module",
