@@ -1,7 +1,6 @@
-import { describe, expect, test, it, jest, afterEach } from "@jest/globals";
-import { store } from "../store/index.js";
-import { fetched } from "./index.js";
-import { computed } from "../computed/index.js";
+import {describe, expect, test, it, jest, afterEach} from "@jest/globals";
+import {fetched} from "./index.js";
+import {computed} from "../computed/index.js";
 
 jest.useFakeTimers();
 jest.spyOn(global, "setInterval");
@@ -26,7 +25,7 @@ describe("Fetched", () => {
   test("We can set fetch options", (done) => {
     const $todo = fetched(`https://jsonplaceholder.typicode.com/posts`, {
       method: "POST",
-      body: JSON.stringify({ title: "foo", body: "bar", userId: 1 }),
+      body: JSON.stringify({title: "foo", body: "bar", userId: 1}),
       headers: {
         "Content-type": "application/json; charset=UTF-8",
       },
@@ -45,7 +44,7 @@ describe("Fetched", () => {
     const $todo = fetched(
       `https://jsonplaceholder.typicode.com/todos/1`,
       {},
-      { fetcher: (url) => fetch(url).then(() => ({ id: 2 })) },
+      {fetcher: (url) => fetch(url).then(() => ({id: 2}))},
     );
 
     expect($todo.get()).toEqual(undefined);
@@ -88,4 +87,75 @@ describe("Fetched", () => {
 
     expect(setInterval).toHaveBeenCalledTimes(0);
   });
+
+  test("We can use the fetch helper", () => {
+    const spy = jest.spyOn(global, 'fetch')
+    const $post = fetched(`https://jsonplaceholder.typicode.com/posts/1`);
+
+    $post.fetch()
+
+    // Because the result of the API call will be the same, the listen is only called once.
+    // So we check if there have been 2 mock calls
+    expect(spy.mock.calls.length).toEqual(2)
+  });
+
+  test("We can use the patch helper", (done) => {
+    const $post = fetched(`https://jsonplaceholder.typicode.com/posts/1`);
+
+    $post.listen((post) => {
+      if (post?.title === 'Updated') {
+        done();
+      }
+    });
+
+    $post.patch({...$post.get(), ...{title: 'Updated'}})
+  });
+
+  test("We can use the put helper", (done) => {
+    const $post = fetched(`https://jsonplaceholder.typicode.com/posts/1`);
+
+    $post.listen((post) => {
+      if (post?.title === 'put') {
+        done();
+      }
+    });
+
+    $post.put({
+      title: 'put',
+    })
+  });
+
+  test("We can use the post helper", (done) => {
+    const $post = fetched(`https://jsonplaceholder.typicode.com/posts`);
+
+    $post.listen((post) => {
+      if (post?.title === 'foo') {
+        done();
+      }
+    });
+
+    $post.post({
+      title: 'foo',
+    })
+  });
+
+  test("We can use the delete helper", (done) => {
+    const $post = fetched(`https://jsonplaceholder.typicode.com/posts/1`);
+
+    $post.listen((post) => {
+      // Is it an empty object?
+      if (Object.keys(post).length === 0) {
+        done();
+      }
+    });
+
+    $post.delete()
+  });
+
+  // TODO what happens if it's not a 200?
+
+  // TODO fetch dependencies?
+  // TODO fetch headers?
+
+  // TODO we can unsubscribe from the listener
 });

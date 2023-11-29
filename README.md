@@ -31,7 +31,7 @@ import { store, computed } from 'somestate'
 
 export const $items = store([1,2,3])
 
-export const $even = computed($items, items => items.filter(item => item % 2 == 0))
+export const $even = computed($items, items => items.filter(item => item % 2 === 0))
 ```
 
 ### fetched
