@@ -170,3 +170,18 @@ module.exports = {
     },
 }
 ```
+
+You can then create dependency chains using computed, which will automatically be triggered when a depend store changes.
+
+```js
+import { computed } from 'somestate'
+import {$flag} from "./flagStore.js"
+
+computed($flag, flag => {
+    if (flag) {
+        // Do some logic
+        // Note that computed/listen is never called when the value stays the same
+    }
+})
+
+```
