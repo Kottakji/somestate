@@ -1,4 +1,4 @@
-import {Store, store} from "../store/index.js";
+import {Store} from "../store/index.js";
 
 /**
  * Performs a fetch request using the provided parameters.
@@ -9,7 +9,16 @@ import {Store, store} from "../store/index.js";
  * @param {Object} options - Additional options for the fetch request.
  * @returns {Promise} - A Promise that resolves to the parsed JSON response.
  */
-export const getFetcher = (url, method, body, options) => fetch(url, {...getOptions(method, body), ...options}).then((response) => response.json());
+export const getFetcher = async (url, method, body, options) => {
+  const response = await fetch(url, {...getOptions(method, body), ...options})
+  const data = await response.json()
+
+  if (!response.ok) {
+    return new Error(response.status, data)
+  }
+
+  return data;
+}
 
 /**
  * Generates options object for HTTP request.
@@ -26,13 +35,22 @@ export const getOptions = (method, body) => ({
 })
 
 /**
+ * Callback for adding two numbers.
+ *
+ * @callback Catcher
+ * @param {Error} error
+ */
+
+/**
  * Default settings
+ *
  * @typedef {Object} Settings
  * @property {Function} [fetcher] - The function used for making GET requests.
  * @property {Function} [patcher] - The function used for making PATCH requests.
  * @property {Function} [putter] - The function used for making PUT requests.
  * @property {Function} [poster] - The function used for making POST requests.
  * @property {Function} [deleter] - The function used for making DELETE requests.
+ * @property {Function} [catcher] - The function invoked on an API request error.
  * @property {number|null} [refetchInterval] - Time interval for automatic data refetching.
  * @property {Array<Store, *>} [dependencies=[]] dependencies - Truthy values.
  *
@@ -44,19 +62,13 @@ const defaultSettings = {
   putter: (url, body, options) => getFetcher(url, 'PUT', body, options),
   poster: (url, body, options) => getFetcher(url, 'POST', body, options),
   deleter: (url, body, options) => getFetcher(url, 'DELETE', null, options),
+  catcher: (error) => () => void ({error}),
   refetchInterval: null,
   dependencies: [],
 };
 
 /**
- * Creates a Store class and fetches data from the specified URL
-
- * @typedef {Store} Fetcher
- * @method fetch - Fetch API request
- * @method post - Post API request
- * @method patch - Patch API request
- * @method put - Put API request
- * @method delete - Delete API request
+ * Creates a Store class and fetches data from the specified URL.
  *
  * @param {string} url - The URL to fetch data from.
  * @param {object} [options={}] - The fetch options to be passed to the fetcher function.
@@ -64,31 +76,104 @@ const defaultSettings = {
  * @returns {Fetcher} - A Store instance containing the fetched data.
  */
 export function fetched(url, options = {}, settings = {}) {
-  const store = new Store(undefined);
+  return new Fetcher(url, options, settings);
+}
 
-  // Keep all default settings, but merge the new ones
-  settings = {...defaultSettings, ...settings};
+class Fetcher extends Store {
+  /**
+   * @param {string} url - The URL to fetch data from.
+   * @param {object} options - Optional fetch options.
+   * @param {Settings} settings - Optional settings for the constructor.
+   */
+  constructor(url, options = {}, settings = {}) {
+    super(undefined)
+    this.url = url;
+    this.options = options;
+    this.catchers = []
 
-  // Check if all dependencies are truthy
-  const hasTruthyDependencies = () => settings.dependencies.every(dependency => !!(dependency instanceof Store ? dependency.get() : dependency));
+    // Keep all default settings, but merge the new ones
+    /**
+     * @type {Settings}
+     */
+    this.settings = {...defaultSettings, ...settings};
 
-  // Fetch the data on init
-  hasTruthyDependencies() && settings.fetcher(url, options).then((result) => store.set(result));
+    // Instantly call fetcher to set data
+    this.fetch(options)
 
-  // Should we refetch at x interval?
-  if (settings?.refetchInterval) {
-    setInterval(
-      () => hasTruthyDependencies() && settings.fetcher(url, options).then((result) => store.set(result)),
-      settings.refetchInterval,
-    );
+    // Should we refetch at x interval?
+    if (settings?.refetchInterval) {
+      setInterval(
+        () => this.fetch(options),
+        settings.refetchInterval,
+      );
+    }
   }
 
-  // Add the fetcher helper methods
-  store.fetch = (options = {}) => settings.fetcher(url, options).then(result => store.set(result));
-  store.post = (body, options = {}) => settings.poster(url, body, options).then(result => store.set(result));
-  store.patch = (body, options = {}) => settings.patcher(url, body, options).then(result => store.set(result));
-  store.put = (body, options = {}) => settings.putter(url, body, options).then(result => store.set(result));
-  store.delete = (options = {}) => settings.deleter(url, options).then(result => store.set(result));
+  /**
+   * @param {object} options
+   */
+  fetch(options) {
+    this.hasTruthyDependencies() && this.settings.fetcher(this.url, options).then(result => result instanceof Error ? this.catchers.map(catcher => catcher(result)) : this.set(result))
+  }
 
-  return store;
+  /**
+   * @param {object} body
+   * @param {object} [options={}]
+   */
+  post(body, options = {}) {
+    this.settings.poster(this.url, body, options).then(result => this.set(result));
+  }
+
+  /**
+   * @param {object} body
+   * @param {object} [options={}]
+   */
+  patch(body, options = {}) {
+    this.settings.patcher(this.url, body, options).then(result => this.set(result));
+  }
+
+  /**
+   * @param {object} body
+   * @param {object} [options={}]
+   */
+  put(body, options = {}) {
+    this.settings.putter(this.url, body, options).then(result => this.set(result));
+  }
+
+  /**
+   * @param {object} [options={}]
+   */
+  delete(options = {}) {
+    this.settings.deleter(this.url, options).then(result => this.set(result));
+  }
+
+  /**
+   * @param {Catcher} closure
+   */
+  catch(closure) {
+    this.catchers.push(closure)
+  }
+
+  /**
+   * Are all dependencies truthy values?
+   *
+   * @returns {boolean}
+   */
+  hasTruthyDependencies() {
+    return this.settings.dependencies.every(dependency => !!(dependency instanceof Store ? dependency.get() : dependency));
+  }
 }
+
+class Error {
+  /**
+   * @param {number} status - The status code.
+   * @param {string} body - The response body.
+   * @return {void}
+   */
+  constructor(status, body) {
+    this.status = status;
+    this.body = body;
+  }
+}
+
+

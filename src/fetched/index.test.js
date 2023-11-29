@@ -183,4 +183,18 @@ describe("Fetched", () => {
       done()
     });
   });
+
+  test("When the api call fails, the catch method should be called", (done) => {
+    const $todo = fetched(`https://jsonplaceholder.typicode.com/wrong`);
+
+    $todo.listen((data) => {
+      throw new Error(`Shouldn't have been called`)
+    });
+
+    $todo.catch((error) => {
+      expect(error.status).toEqual(404);
+      expect(error.body).toEqual({});
+      done();
+    })
+  });
 });

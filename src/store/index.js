@@ -71,9 +71,16 @@ export class Store {
   }
 
   /**
+   * Callback for adding two numbers.
+   *
+   * @callback Closure
+   * @param {any} value
+   */
+
+  /**
    * Adds a listener to the list of listeners.
    *
-   * @param {function} closure - The closure to be invoked when the event occurs.
+   * @param {Closure} closure - The closure to be invoked when the event occurs.
    * @param {Array<string>|null} [keys=null] - Optional array of keys to filter the events.
    * @returns {Listener} - A new instance of the Listener class.
    */
@@ -103,6 +110,7 @@ class Listener {
   constructor(id, closure, keys, unsubscribe) {
     this.id = id;
     this.closure = closure;
+
     this.keys = keys;
     this.unsubscribe = unsubscribe;
   }
