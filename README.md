@@ -4,7 +4,9 @@ Intuitive and simple platform agnostic state management
 
 ## Install
 
-```npm install somestate```
+```bash
+npm install somestate
+```
 
 ## Packages
 
