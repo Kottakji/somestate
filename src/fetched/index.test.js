@@ -209,4 +209,22 @@ describe("Fetched", () => {
       done();
     });
   });
+
+  test("When the dependencies get updated, we should also update the fetched", (done) => {
+    const $true = store(false);
+    const $todo = fetched(
+      `https://jsonplaceholder.typicode.com/todos/1`,
+      {},
+      { dependencies: [$true] },
+    );
+
+    expect($todo.get()).toEqual(undefined);
+
+    $todo.listen(() => {
+      done();
+    });
+
+    // This should invoke the fetcher to refetch
+    $true.set(true)
+  })
 });

@@ -108,6 +108,13 @@ class Fetcher extends Store {
     if (settings?.refetchInterval) {
       setInterval(() => this.fetch(options), settings.refetchInterval);
     }
+
+    // Listen to each dependency change (if it's a store)
+    settings.dependencies.map((dependency) => {
+      if (dependency instanceof Store) {
+        dependency.listen(() => this.fetch(options))
+      }
+    })
   }
 
   /**
