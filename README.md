@@ -4,11 +4,11 @@ Intuitive and simple platform agnostic state management
 
 ## Install
 
-`npm install somestate/react`
+```npm install somestate```
 
 ## Packages
 
-React -  `https://github.com/Kottakji/somestate-react`
+React -  https://github.com/Kottakji/somestate-react
 
 ## Methods
 
