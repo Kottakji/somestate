@@ -101,7 +101,7 @@ $id.set()
 
 ## Options
 
-### State options
+### Fetcher methods
 
 ```js
 import { fetched } from 'somestate'
@@ -115,6 +115,8 @@ $todos.put(todos)
 $todos.post(todos)
 $todos.delete()
 
+// Error handling
+$todos.catch(error => console.log(error.status, error.body))
 ```
 
 ### Fetcher options
@@ -138,6 +140,7 @@ export const {data: $todos, loading, error} = fetched(`https://jsonplaceholder.t
         putter: (url, body, options) => getFetcher(url, 'PUT', body, options),
         poster: (url, body, options) => getFetcher(url, 'POST', body, options),
         deleter: (url, body, options) => getFetcher(url, 'DELETE', null, options),
+        catcher: (error) => {},
 
         // Refetch interval
         refetchInterval: 0,
