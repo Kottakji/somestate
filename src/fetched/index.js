@@ -28,12 +28,13 @@ export const getOptions = (method, body) => ({
 /**
  * Default settings
  * @typedef {Object} Settings
- * @property {Function} fetcher - The function used for making GET requests.
- * @property {Function} patcher - The function used for making PATCH requests.
- * @property {Function} putter - The function used for making PUT requests.
- * @property {Function} poster - The function used for making POST requests.
- * @property {Function} deleter - The function used for making DELETE requests.
- * @property {number|null} refetchInterval - Time interval for automatic data refetching.
+ * @property {Function} [fetcher] - The function used for making GET requests.
+ * @property {Function} [patcher] - The function used for making PATCH requests.
+ * @property {Function} [putter] - The function used for making PUT requests.
+ * @property {Function} [poster] - The function used for making POST requests.
+ * @property {Function} [deleter] - The function used for making DELETE requests.
+ * @property {number|null} [refetchInterval] - Time interval for automatic data refetching.
+ * @property {Array<Store, *>} [dependencies=[]] dependencies - Truthy values.
  *
  * @type {Settings}
  */
@@ -44,6 +45,7 @@ const defaultSettings = {
   poster: (url, body, options) => getFetcher(url, 'POST', body, options),
   deleter: (url, body, options) => getFetcher(url, 'DELETE', null, options),
   refetchInterval: null,
+  dependencies: [],
 };
 
 /**
@@ -58,22 +60,25 @@ const defaultSettings = {
  *
  * @param {string} url - The URL to fetch data from.
  * @param {object} [options={}] - The fetch options to be passed to the fetcher function.
- * @param {Settings} [settings=defaultSettings] - The settings object containing the fetcher and other helper methods.
+ * @param {Settings} [settings={}] - The settings object containing the fetcher and other helper methods.
  * @returns {Fetcher} - A Store instance containing the fetched data.
  */
-export function fetched(url, options = {}, settings = defaultSettings) {
+export function fetched(url, options = {}, settings = {}) {
   const store = new Store(undefined);
 
   // Keep all default settings, but merge the new ones
   settings = {...defaultSettings, ...settings};
 
+  // Check if all dependencies are truthy
+  const hasTruthyDependencies = () => settings.dependencies.every(dependency => !!(dependency instanceof Store ? dependency.get() : dependency));
+
   // Fetch the data on init
-  settings.fetcher(url, options).then((result) => store.set(result));
+  hasTruthyDependencies() && settings.fetcher(url, options).then((result) => store.set(result));
 
   // Should we refetch at x interval?
   if (settings?.refetchInterval) {
     setInterval(
-      () => settings.fetcher(url, options).then((result) => store.set(result)),
+      () => hasTruthyDependencies() && settings.fetcher(url, options).then((result) => store.set(result)),
       settings.refetchInterval,
     );
   }

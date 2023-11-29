@@ -1,6 +1,7 @@
 import {describe, expect, test, it, jest, afterEach} from "@jest/globals";
 import {fetched} from "./index.js";
 import {computed} from "../computed/index.js";
+import {store} from "../store/index.js";
 
 jest.useFakeTimers();
 jest.spyOn(global, "setInterval");
@@ -152,22 +153,34 @@ describe("Fetched", () => {
     $post.delete()
   });
 
-  test("We can create a store from a GET response", (done) => {
-    const $todo = fetched(`https://jsonplaceholder.typicode.com/todos/1`);
+  test("We can fetch only when dependencies are not falsy", () => {
+    const $todo = fetched(`https://jsonplaceholder.typicode.com/todos/1`, {}, {dependencies: [false]});
 
     expect($todo.get()).toEqual(undefined);
 
-    $todo.listen((todo) => {
-      expect(todo?.id).toEqual(1);
-
-      done();
+    $todo.listen(() => {
+      throw new Error(`Shouldn't have been called`)
     });
   });
 
-  // TODO what happens if it's not a 200?
+  test("We can fetch only when dependencies are truthy", (done) => {
+    const $todo = fetched(`https://jsonplaceholder.typicode.com/todos/1`, {}, {dependencies: [true]});
 
-  // TODO fetch dependencies?
-  // TODO fetch headers?
+    expect($todo.get()).toEqual(undefined);
 
-  // TODO we can unsubscribe from the listener
+    $todo.listen(() => {
+      done()
+    });
+  });
+
+  test("We can fetch only when dependencies are truthy, using a store", (done) => {
+    const $true = store(true)
+    const $todo = fetched(`https://jsonplaceholder.typicode.com/todos/1`, {}, {dependencies: [$true]});
+
+    expect($todo.get()).toEqual(undefined);
+
+    $todo.listen(() => {
+      done()
+    });
+  });
 });
