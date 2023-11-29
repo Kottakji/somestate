@@ -152,3 +152,21 @@ export const {data: $todos, loading, error} = fetched(`https://jsonplaceholder.t
 
 export const $completed = computed($todos, todos => todos.filter(todo => todo?.completed))
 ```
+
+## Webpack
+
+You can auto load all the store files, so that the stores will be initiated by default.
+
+https://webpack.js.org/concepts/entry-points/
+
+webpack.config.js
+```js
+const glob = require('glob');
+
+module.exports = {
+    //...
+    entry: {
+        index: [...glob.sync('./src/stores/*.js'), ...['./src/index.js']]
+    },
+}
+```
