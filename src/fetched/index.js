@@ -194,6 +194,9 @@ class Fetcher extends Store {
   }
 
   clear() {
+    // Clear listeners
+    this.listeners = [];
+
     // Clear dependency listeners
     this.dependencyListeners.map((listener) => listener.unsubscribe())
   }
