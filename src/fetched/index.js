@@ -90,7 +90,9 @@ export class Fetched extends Store {
    * @param {Settings} settings - Optional settings for the constructor.
    */
   constructor(url, options = {}, settings = {}) {
-    super(undefined);
+    // Use {} as default value so we can destructure (ex: const {a} = fetched(...))
+    super({});
+
     this.url = url;
     this.options = options;
     this.catchers = [];

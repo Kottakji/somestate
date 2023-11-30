@@ -14,7 +14,7 @@ describe("Fetched", () => {
   test("We can create a store from a GET response", (done) => {
     const $todo = fetched(`https://jsonplaceholder.typicode.com/todos/1`);
 
-    expect($todo.get()).toEqual(undefined);
+    expect($todo.get()).toEqual({});
 
     $todo.listen((todo) => {
       expect(todo?.id).toEqual(1);
@@ -32,7 +32,7 @@ describe("Fetched", () => {
       },
     });
 
-    expect($todo.get()).toEqual(undefined);
+    expect($todo.get()).toEqual({});
 
     $todo.listen((todo) => {
       expect(todo?.title).toEqual("foo");
@@ -48,7 +48,7 @@ describe("Fetched", () => {
       { fetcher: (url) => fetch(url).then(() => ({ id: 2 })) },
     );
 
-    expect($todo.get()).toEqual(undefined);
+    expect($todo.get()).toEqual({});
 
     $todo.listen((todo) => {
       expect(todo?.id).toEqual(2);
@@ -62,7 +62,7 @@ describe("Fetched", () => {
 
     const $id = computed($todo, (todo) => todo?.id);
 
-    expect($todo.get()).toEqual(undefined);
+    expect($todo.get()).toEqual({});
 
     $id.listen((id) => {
       expect(id).toEqual(1);
@@ -160,7 +160,7 @@ describe("Fetched", () => {
       { dependencies: [false] },
     );
 
-    expect($todo.get()).toEqual(undefined);
+    expect($todo.get()).toEqual({});
 
     $todo.listen(() => {
       throw new Error(`Shouldn't have been called`);
@@ -174,7 +174,7 @@ describe("Fetched", () => {
       { dependencies: [true] },
     );
 
-    expect($todo.get()).toEqual(undefined);
+    expect($todo.get()).toEqual({});
 
     $todo.listen(() => {
       done();
@@ -189,7 +189,7 @@ describe("Fetched", () => {
       { dependencies: [$true] },
     );
 
-    expect($todo.get()).toEqual(undefined);
+    expect($todo.get()).toEqual({});
 
     $todo.listen(() => {
       done();
@@ -218,7 +218,7 @@ describe("Fetched", () => {
       { dependencies: [$dependency] },
     );
 
-    expect($todo.get()).toEqual(undefined);
+    expect($todo.get()).toEqual({});
 
     $todo.listen(() => {
       done();
