@@ -127,9 +127,6 @@ export const {data: $todos, loading, error} = fetched(`https://jsonplaceholder.t
     },
     // Additional settings
     {
-        // Fetcher
-        fetcher: (url, options = {}) => fetch(url, options).then((r) => r.json()),
-
         // Custom fetcher methods (can be used to set a custom url)
         fetcher: (url, options) => getFetcher(url, 'GET', null, options),
         patcher: (url, body, options) => getFetcher(url, 'PATCH', body, options),
