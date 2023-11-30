@@ -139,7 +139,7 @@ export const {data: $todos, loading, error} = fetched(`https://jsonplaceholder.t
         refetchInterval: 0,
 
         // Dependencies - only fetch when the dependencies are not null/undefined/false
-        dependencies: [$otherStore]
+        dependencies: [someVariable, $someStore]
     }
 )
 
