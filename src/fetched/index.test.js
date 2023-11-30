@@ -225,8 +225,8 @@ describe("Fetched", () => {
     });
 
     // This should invoke the fetcher to refetch
-    $dependency.set(true)
-  })
+    $dependency.set(true);
+  });
 
   test("On the fetcher, we can clear the dependency listeners via clear()", () => {
     const $dependency = store(false);
@@ -237,10 +237,10 @@ describe("Fetched", () => {
     );
 
     // This listener should always stay, it should only clear the dependency listeners set in the fetched constructor
-    $dependency.listen(() => {})
+    $dependency.listen(() => {});
 
-    expect($dependency.listeners.length).toEqual(2)
+    expect($dependency.listeners.length).toEqual(2);
     $todo.clear();
-    expect($dependency.listeners.length).toEqual(1)
-  })
+    expect($dependency.listeners.length).toEqual(1);
+  });
 });

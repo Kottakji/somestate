@@ -1,7 +1,7 @@
 import { describe, expect, test, it, afterEach, jest } from "@jest/globals";
 import { store } from "../store/index.js";
 import { computed } from "./index.js";
-import {fetched} from "../fetched/index.js";
+import { fetched } from "../fetched/index.js";
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -103,13 +103,13 @@ describe("Computed", () => {
         throw new Error(`Shouldn't have been updated`);
       }
       if (value === 1) {
-        done()
+        done();
       }
-    })
+    });
   });
 
   test("We can compute based on a fetched store, with multiple dependent stores key", (done) => {
-    const $value = store(true)
+    const $value = store(true);
     const $todo = fetched(`https://jsonplaceholder.typicode.com/todos/1`);
 
     const $id = computed(
@@ -123,8 +123,8 @@ describe("Computed", () => {
         throw new Error(`Shouldn't have been updated`);
       }
       if (value === 1) {
-        done()
+        done();
       }
-    })
+    });
   });
 });

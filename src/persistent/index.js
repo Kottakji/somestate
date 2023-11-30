@@ -8,7 +8,7 @@ import { Store } from "../store/index.js";
  * @returns {Persistent} - A new instance of the Persistent class.
  */
 export function persistent(key, defaultValue = undefined) {
-  return new Persistent(key, defaultValue)
+  return new Persistent(key, defaultValue);
 }
 
 /**
@@ -30,10 +30,10 @@ export class Persistent extends Store {
     super(getFromLocalStorage(key) || defaultValue);
 
     // Set localstorage key
-    this.key = key
+    this.key = key;
 
     // Set value in localstorage
-    saveToLocalStorage(this.key, this.value)
+    saveToLocalStorage(this.key, this.value);
   }
 
   /**
@@ -45,7 +45,7 @@ export class Persistent extends Store {
     super.set(newValue);
 
     // Set value in localstorage
-    saveToLocalStorage(this.key, this.value)
+    saveToLocalStorage(this.key, this.value);
   }
 }
 
@@ -57,7 +57,7 @@ export class Persistent extends Store {
  * @return {void}
  */
 function saveToLocalStorage(key, value) {
-  window.localStorage.setItem(key, JSON.stringify(value))
+  window.localStorage.setItem(key, JSON.stringify(value));
 }
 
 /**
@@ -67,7 +67,7 @@ function saveToLocalStorage(key, value) {
  * @returns {any|null} - The retrieved value if it exists, otherwise null.
  */
 function getFromLocalStorage(key) {
-  const result = window.localStorage.getItem(key)
+  const result = window.localStorage.getItem(key);
   if (!result) {
     return null;
   }

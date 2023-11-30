@@ -98,7 +98,7 @@ export class Fetched extends Store {
     /**
      * @type {Listener[]}
      */
-    this.dependencyListeners = []
+    this.dependencyListeners = [];
 
     // Keep all default settings, but merge the new ones
     /**
@@ -117,10 +117,10 @@ export class Fetched extends Store {
     // Listen to each dependency change (if it's a store)
     this.settings.dependencies.map((dependency) => {
       if (dependency instanceof Store) {
-        const listener = dependency.listen(() => this.fetch(options))
-        this.dependencyListeners.push(listener)
+        const listener = dependency.listen(() => this.fetch(options));
+        this.dependencyListeners.push(listener);
       }
-    })
+    });
   }
 
   /**
@@ -199,10 +199,10 @@ export class Fetched extends Store {
    * @return {void}
    */
   clear() {
-    super.clear()
+    super.clear();
 
     // Clear dependency listeners
-    this.dependencyListeners.map((listener) => listener.unsubscribe())
+    this.dependencyListeners.map((listener) => listener.unsubscribe());
   }
 }
 
