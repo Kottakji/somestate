@@ -17,7 +17,7 @@ export function persistent(key, defaultValue = undefined) {
  * @classdesc A class that extends Store and provides persistent storage using local storage.
  * @extends Store
  */
-class Persistent extends Store {
+export class Persistent extends Store {
   /**
    * Creates a new instance of the Constructor class.
    *

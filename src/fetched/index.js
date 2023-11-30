@@ -77,13 +77,13 @@ const defaultSettings = {
  * @param {string} url - The URL to fetch data from.
  * @param {object} [options={}] - The fetch options to be passed to the fetcher function.
  * @param {Settings} [settings={}] - The settings object containing the fetcher and other helper methods.
- * @returns {Fetcher} - A Store instance containing the fetched data.
+ * @returns {Fetched} - A Store instance containing the fetched data.
  */
 export function fetched(url, options = {}, settings = {}) {
-  return new Fetcher(url, options, settings);
+  return new Fetched(url, options, settings);
 }
 
-class Fetcher extends Store {
+export class Fetched extends Store {
   /**
    * @param {string} url - The URL to fetch data from.
    * @param {object} options - Optional fetch options.

@@ -127,19 +127,19 @@ $todos.catch(error => console.log(error.status, error.body))
 
 ## Options
 
-### Fetcher options
+### Fetched options
 
 ```js
 import { computed, fetched } from 'somestate'
 
 export const {data: $todos, loading, error} = fetched(`https://jsonplaceholder.typicode.com/todos`,
-    // Fetcher options
+    // Fetched options
     {
         headers: {},
     },
     // Additional settings
     {
-        // Custom fetcher methods (can be used to set a custom url)
+        // Custom api methods (can be used to set a custom url)
         fetcher: (url, options) => getFetcher(url, 'GET', null, options),
         patcher: (url, body, options) => getFetcher(url, 'PATCH', body, options),
         putter: (url, body, options) => getFetcher(url, 'PUT', body, options),
