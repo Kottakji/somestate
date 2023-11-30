@@ -14,9 +14,18 @@ export function computed(dependencies, closure, keys = null) {
     dependencies.every((dependency) => dependency instanceof Store)
   );
 
+  // Make sure to only compute the value when we don't have any undefined values
+  // Otherwise the computed is initiated its dependencies (for example with fetched)
+  const getValue = (value) => {
+    if ((single && value !== undefined) || value?.every(v => v !== undefined)) {
+      return closure(value)
+    }
+    return undefined;
+  }
+
   // Initialize the store with the default value
   const result = store(
-    closure(
+    getValue(
       single
         ? dependencies.get()
         : dependencies.map((dependency) => dependency.get()),
@@ -25,12 +34,12 @@ export function computed(dependencies, closure, keys = null) {
 
   // Listen to the dependencies
   single
-    ? dependencies.listen((value) => result.set(closure(value)), keys)
+    ? dependencies.listen((value) => result.set(getValue(value)), keys)
     : dependencies.map((dependency) =>
         dependency.listen(
           () =>
             result.set(
-              closure(dependencies.map((dependency) => dependency.get())),
+              getValue(dependencies.map((dependency) => dependency.get())),
             ),
           keys,
         ),

@@ -1,6 +1,7 @@
 import { describe, expect, test, it, afterEach, jest } from "@jest/globals";
 import { store } from "../store/index.js";
 import { computed } from "./index.js";
+import {fetched} from "../fetched/index.js";
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -86,5 +87,44 @@ describe("Computed", () => {
     $item.set({ x: 12, y: 12 });
 
     expect($double.get()).toEqual({ x: 24, y: 24 });
+  });
+
+  test("We can compute based on a fetched store", (done) => {
+    const $todo = fetched(`https://jsonplaceholder.typicode.com/todos/1`);
+
+    const $id = computed(
+      $todo,
+      (todo) => todo.id, // This should only be called when the initial value is not undefined
+      ["id"],
+    );
+
+    $id.listen((value) => {
+      if (value === undefined) {
+        throw new Error(`Shouldn't have been updated`);
+      }
+      if (value === 1) {
+        done()
+      }
+    })
+  });
+
+  test("We can compute based on a fetched store, with multiple dependent stores key", (done) => {
+    const $value = store(true)
+    const $todo = fetched(`https://jsonplaceholder.typicode.com/todos/1`);
+
+    const $id = computed(
+      [$value, $todo],
+      ([_, todo]) => todo.id, // This should only be called when the initial value is not undefined
+      ["id"],
+    );
+
+    $id.listen((value) => {
+      if (value === undefined) {
+        throw new Error(`Shouldn't have been updated`);
+      }
+      if (value === 1) {
+        done()
+      }
+    })
   });
 });
