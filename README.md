@@ -34,7 +34,14 @@ import { store, computed } from 'somestate'
 export const $items = store([1,2,3])
 
 export const $even = computed($items, items => items.filter(item => item % 2 === 0))
+
+// Or multiple dependencies
+export const $other = computed([$items, $even], [items, even] => {
+    // Do something
+})
 ```
+
+
 
 ### fetched
 
