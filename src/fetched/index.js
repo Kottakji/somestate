@@ -124,12 +124,12 @@ export class Fetched extends Store {
   }
 
   /**
-   * @param {object} options
+   * @param {object} [options={}]
    */
-  fetch(options) {
+  fetch(options = {}) {
     this.hasTruthyDependencies() &&
       this.settings
-        .fetcher(this.url, options)
+        .fetcher(this.url, {...this.options, ...options})
         .then((result) =>
           result instanceof Error
             ? this.catchers.map((catcher) => catcher(result))
@@ -143,7 +143,7 @@ export class Fetched extends Store {
    */
   post(body, options = {}) {
     this.settings
-      .poster(this.url, body, options)
+      .poster(this.url, body, {...this.options, ...options})
       .then((result) => this.set(result));
   }
 
@@ -153,7 +153,7 @@ export class Fetched extends Store {
    */
   patch(body, options = {}) {
     this.settings
-      .patcher(this.url, body, options)
+    .patcher(this.url, body, {...this.options, ...options})
       .then((result) => this.set(result));
   }
 
@@ -163,7 +163,7 @@ export class Fetched extends Store {
    */
   put(body, options = {}) {
     this.settings
-      .putter(this.url, body, options)
+      .putter(this.url, body, {...this.options, ...options})
       .then((result) => this.set(result));
   }
 
@@ -171,7 +171,7 @@ export class Fetched extends Store {
    * @param {object} [options={}]
    */
   delete(options = {}) {
-    this.settings.deleter(this.url, options).then((result) => this.set(result));
+    this.settings.deleter(this.url, {...this.options, ...options}).then((result) => this.set(result));
   }
 
   /**

@@ -46,7 +46,7 @@ export const $other = computed([$items, $even], [items, even] => {
 ```js
 import { computed, fetched } from 'somestate'
 
-export const {data: $todos, loading, error} = fetched(`https://jsonplaceholder.typicode.com/todos`)
+export const $todos = fetched(`https://jsonplaceholder.typicode.com/todos`)
 
 export const $completed = computed($todos, todos => todos.filter(todo => todo?.completed))
 ```
@@ -70,9 +70,9 @@ export const $withDefaultValue = persistent('mylocalstoragekey', 1)
 ```js
 import { computed, fetched } from 'somestate'
 
-export const {data: $todos, loading, error} = fetched(`https://jsonplaceholder.typicode.com/todos`)
+export const $todos = fetched(`https://jsonplaceholder.typicode.com/todos`)
 
-$todos.listen(({data: todos}) => {
+$todos.listen((todos) => {
     console.log(todos)
 })
 ```
@@ -82,13 +82,13 @@ $todos.listen(({data: todos}) => {
 ```js
 import { computed, fetched } from 'somestate'
 
-export const {data: $todo, loading, error} = fetched(`https://jsonplaceholder.typicode.com/todos/1`)
+export const $todo = fetched(`https://jsonplaceholder.typicode.com/todos/1`)
 
 // Only update when $item.completed has changed
 export const $isCompleted = computed($todo, todo => !!todo?.completed, ['completed'])
 
 // Only listen when $item.completed has changed
-$item.listen(({data: item}) => {
+$item.listen((item) => {
     console.log(item)
 }, ['completed'])
 ```
@@ -112,7 +112,7 @@ $id.set()
 ```js
 import { fetched } from 'somestate'
 
-export const {data: $todos, loading, error} = fetched(`https://jsonplaceholder.typicode.com/todos`)
+export const $todos = fetched(`https://jsonplaceholder.typicode.com/todos`)
 
 // Corresponding to the HTTP request methods
 $todos.get()
@@ -132,7 +132,7 @@ $todos.catch(error => console.log(error.status, error.body))
 ```js
 import { computed, fetched } from 'somestate'
 
-export const {data: $todos, loading, error} = fetched(`https://jsonplaceholder.typicode.com/todos`,
+export const $todos = fetched(`https://jsonplaceholder.typicode.com/todos`,
     // Fetched options
     {
         headers: {},
