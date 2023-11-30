@@ -132,7 +132,7 @@ export const {data: $todos, loading, error} = fetched(`https://jsonplaceholder.t
         patcher: (url, body, options) => getFetcher(url, 'PATCH', body, options),
         putter: (url, body, options) => getFetcher(url, 'PUT', body, options),
         poster: (url, body, options) => getFetcher(url, 'POST', body, options),
-        deleter: (url, body, options) => getFetcher(url, 'DELETE', null, options),
+        deleter: (url, options) => getFetcher(url, 'DELETE', null, options),
         catcher: (error) => {},
 
         // Refetch interval
