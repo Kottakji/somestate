@@ -98,19 +98,6 @@ $id.set()
 ### Fetched methods
 
 ```js
-import { store } from 'somestate'
-
-export const $id = store();
-
-$id.get()
-$id.set()
-```
-
-## Options
-
-### Fetcher methods
-
-```js
 import { fetched } from 'somestate'
 
 export const {data: $todos, loading, error} = fetched(`https://jsonplaceholder.typicode.com/todos`)
@@ -125,6 +112,8 @@ $todos.delete()
 // Error handling
 $todos.catch(error => console.log(error.status, error.body))
 ```
+
+## Options
 
 ### Fetcher options
 
