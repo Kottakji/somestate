@@ -243,5 +243,4 @@ describe("Fetched", () => {
     $todo.clear();
     expect($dependency.listeners.length).toEqual(1)
   })
-
 });

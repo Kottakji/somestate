@@ -41,8 +41,6 @@ export const $other = computed([$items, $even], [items, even] => {
 })
 ```
 
-
-
 ### fetched
 
 ```js
@@ -51,6 +49,20 @@ import { computed, fetched } from 'somestate'
 export const {data: $todos, loading, error} = fetched(`https://jsonplaceholder.typicode.com/todos`)
 
 export const $completed = computed($todos, todos => todos.filter(todo => todo?.completed))
+```
+
+### persistent
+
+Same as the store, but gets the value from localstorage
+
+```js
+import { persistent } from 'somestate'
+
+// Without a default value (will be undefined by default)
+export const $store = persistent('mylocalstoragekey')
+
+// With a default value, if there is something in localstorage, it will use that value
+export const $withDefaultValue = persistent('mylocalstoragekey', 1)
 ```
 
 ### listen
@@ -133,6 +145,14 @@ export const {data: $todos, loading, error} = fetched(`https://jsonplaceholder.t
         putter: (url, body, options) => getFetcher(url, 'PUT', body, options),
         poster: (url, body, options) => getFetcher(url, 'POST', body, options),
         deleter: (url, options) => getFetcher(url, 'DELETE', null, options),
+
+        // Custom fetcher methods can also use a single url to only change the url, but keep the fetcher the same
+        // patcher: `https://example.com/items`
+        // putter: `https://example.com/items`
+        // poster: `https://example.com/items`
+        // deleter: `https://example.com/items`
+
+        // Catch any api request errors
         catcher: (error) => {},
 
         // Refetch interval
