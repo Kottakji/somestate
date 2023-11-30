@@ -101,6 +101,16 @@ export class Store {
   unsubscribe(id) {
     this.listeners = this.listeners.filter((listener) => listener.id !== id);
   }
+
+  /**
+   * Clears the listeners array.
+   *
+   * @return {void} - No value is returned.
+   */
+  clear() {
+    // Clear listeners
+    this.listeners = [];
+  }
 }
 
 /**
