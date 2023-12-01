@@ -55,7 +55,7 @@ export const getOptions = (method, body) => ({
  * @property {Function} [poster] - The function used for making POST requests.
  * @property {Function} [deleter] - The function used for making DELETE requests.
  * @property {Function} [catcher] - The function invoked on an API request error.
- * @property {number|null} [refetchInterval] - Time interval for automatic data refetching.
+ * @property {number|null} [refetchInterval] - Interval in ms for automatic data refetching.
  * @property {Array<Store>|Array<*>} [dependencies=[]] dependencies - Truthy values.
  *
  * @type {Settings}
