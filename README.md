@@ -1,6 +1,6 @@
 # Somestate
 
-Intuitive and simple platform agnostic state management
+Intuitive and simple platform agnostic state management. Designed to separate logic from the UI.
 
 ## Install
 
@@ -12,9 +12,13 @@ npm install somestate
 
 React -  https://github.com/Kottakji/somestate-react
 
-## Methods
+## Guide
 
 ### store
+
+Store any variable in the store, so you can listen to changes.
+
+`Note: Listeners will never be triggered when the old value and new value are equal`
 
 ```js
 import { store } from 'somestate'
@@ -27,6 +31,8 @@ export function addItem(item) {
 ```
 
 ### computed
+
+Create a store based on another store.
 
 ```js
 import { store, computed } from 'somestate'
@@ -43,17 +49,28 @@ export const $other = computed([$items, $even], [items, even] => {
 
 ### fetched
 
+Initiate the store from a fetch request.
+
+Notes:
+- The default value will be `{}`. This allows for destructuring within the closure.
+- A computed value based on a fetched store will only be called when the fetched store has a value.
+
 ```js
 import { computed, fetched } from 'somestate'
 
 export const $todos = fetched(`https://jsonplaceholder.typicode.com/todos`)
 
-export const $completed = computed($todos, todos => todos.filter(todo => todo?.completed))
+// Handle any errors
+$todos.catch(error => console.log(error.status, error.body))
+
+// The default value will be `{}`. This allows for destructuring
+export const $completed = computed($todos, ({completed}) => !!completed)
+
 ```
 
 ### persistent
 
-Same as the store, but gets the value from localstorage
+Same as the store, but gets the value from localstorage.
 
 ```js
 import { persistent } from 'somestate'
@@ -67,6 +84,8 @@ export const $withDefaultValue = persistent('mylocalstoragekey', 1)
 
 ### listen
 
+Listen to changes on any type of store.
+
 ```js
 import { computed, fetched } from 'somestate'
 
@@ -77,7 +96,9 @@ $todos.listen((todos) => {
 })
 ```
 
-### Only listen to key changes
+### Key changes
+
+Only listen to key changes on a store.
 
 ```js
 import { computed, fetched } from 'somestate'
@@ -102,7 +123,10 @@ import { store } from 'somestate'
 
 export const $id = store();
 
+// Get the latest data
 $id.get()
+
+// Set new data, triggering the listeners
 $id.set()
 ```
 
@@ -115,13 +139,14 @@ import { fetched } from 'somestate'
 export const $todos = fetched(`https://jsonplaceholder.typicode.com/todos`)
 
 // Corresponding to the HTTP request methods
-$todos.get()
+// Will update the data and trigger the listeners
+$todos.fetch()
 $todos.patch(todos)
 $todos.put(todos)
 $todos.post(todos)
 $todos.delete()
 
-// Error handling
+// Handle API request errors (on !response.ok)
 $todos.catch(error => console.log(error.status, error.body))
 ```
 
@@ -166,9 +191,12 @@ export const $todos = fetched(`https://jsonplaceholder.typicode.com/todos`,
 export const $completed = computed($todos, todos => todos.filter(todo => todo?.completed))
 ```
 
-## Webpack
+## Best practices
 
-You can auto load all the store files, so that the stores will be initiated by default.
+### Webpack
+
+You can auto load any or all of the store files, so that the stores will be initiated by default.
+This allows you to separate logic and UI, by not having to import certain code within your UI files.
 
 https://webpack.js.org/concepts/entry-points/
 
@@ -184,6 +212,8 @@ module.exports = {
 }
 ```
 
+### Dependency chains
+
 You can then create dependency chains using computed, which will automatically be triggered when a depend store changes.
 
 ```js
@@ -193,7 +223,7 @@ import {$flag} from "./flagStore.js"
 computed($flag, flag => {
     if (flag) {
         // Do some logic
-        // Note that computed/listen is never called when the value stays the same
+        // Note that listeners will never be triggered when the old value and new value are equal`
     }
 })
 
