@@ -201,8 +201,6 @@ export class Fetched extends Store {
    * @return {void}
    */
   clear() {
-    super.clear();
-
     // Clear dependency listeners
     this.dependencyListeners.map((listener) => listener.unsubscribe());
   }

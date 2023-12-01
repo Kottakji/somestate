@@ -40,7 +40,7 @@ export class Store {
    */
   set(newValue) {
     // Keep the old value for comparison
-    const oldValue = this.value;
+    const oldValue = structuredClone(this.value);
 
     // Only update when not the same
     if (equals(oldValue, newValue)) return;
@@ -107,10 +107,7 @@ export class Store {
    *
    * @return {void} - No value is returned.
    */
-  clear() {
-    // Clear listeners
-    this.listeners = [];
-  }
+  clear() {}
 }
 
 /**
