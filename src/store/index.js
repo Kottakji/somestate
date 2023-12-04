@@ -1,3 +1,5 @@
+import structuredClone from "@ungap/structured-clone";
+
 /**
  * Creates a new instance of the Store class.
  *
@@ -39,11 +41,8 @@ export class Store {
    * @return {void}
    */
   set(newValue) {
-    // Use structuredClone if available or otherwise an old method for older browsers
-    const clone = (typeof global?.structuredClone === "function") ? (value) => global.structuredClone(value) : (value) => JSON.parse(JSON.stringify(value))
-
     // Keep the old value for comparison
-    const oldValue = this.value !== undefined ? clone(this.value) : undefined;
+    const oldValue = structuredClone(this.value)
 
     // Only update when not the same
     if (equals(oldValue, newValue)) return;
