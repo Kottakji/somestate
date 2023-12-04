@@ -40,7 +40,7 @@ export class Store {
    */
   set(newValue) {
     // Use structuredClone if available or otherwise an old method for older browsers
-    const clone = (typeof global.structuredClone === "function") ? (value) => structuredClone(value) : (value) => JSON.parse(JSON.stringify(value))
+    const clone = (typeof global?.structuredClone === "function") ? (value) => global.structuredClone(value) : (value) => JSON.parse(JSON.stringify(value))
 
     // Keep the old value for comparison
     const oldValue = this.value !== undefined ? clone(this.value) : undefined;
