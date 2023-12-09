@@ -42,7 +42,10 @@ export class Store {
    */
   set(newValue) {
     // Keep the old value for comparison
-    const oldValue = structuredClone(this.value)
+    const oldValue =
+      typeof this.value === "object"
+        ? Object.assign({}, this.value)
+        : structuredClone(this.value);
 
     // Only update when not the same
     if (equals(oldValue, newValue)) return;
