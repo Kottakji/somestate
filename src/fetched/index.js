@@ -276,6 +276,9 @@ export class Fetched extends Store {
 
     // Clear catchers
     this.catchers = [];
+
+    // Clear loaders
+    this.loaders = [];
   }
 }
 
