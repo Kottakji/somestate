@@ -39,10 +39,13 @@ export const getOptions = (method, body) => ({
 });
 
 /**
- * Callback for adding two numbers.
- *
  * @callback Catcher
  * @param {Error} error
+ */
+
+/**
+ * @callback Loader
+ * @param {boolean} loading
  */
 
 /**
@@ -96,6 +99,7 @@ export class Fetched extends Store {
     this.url = url;
     this.options = options;
     this.catchers = [];
+    this.loaders = [];
     this.loading = false;
     this.error = null;
 
@@ -132,7 +136,7 @@ export class Fetched extends Store {
    */
   fetch(options = {}) {
     if (this.hasTruthyDependencies()) {
-      this.loading = true;
+      this.setLoading(true);
       this.error = null;
       this.settings
         .fetcher(this.url, { ...this.options, ...options })
@@ -144,7 +148,7 @@ export class Fetched extends Store {
           }
           this.set(result);
         })
-        .finally(() => (this.loading = false));
+        .finally(() => this.setLoading(false));
     }
   }
 
@@ -153,7 +157,7 @@ export class Fetched extends Store {
    * @param {object} [options={}]
    */
   post(body, options = {}) {
-    this.loading = true;
+    this.setLoading(true);
     this.error = null;
     this.settings
       .poster(this.url, body, { ...this.options, ...options })
@@ -165,7 +169,7 @@ export class Fetched extends Store {
         }
         this.set(result);
       })
-      .finally(() => (this.loading = false));
+      .finally(() => this.setLoading(false));
   }
 
   /**
@@ -173,7 +177,7 @@ export class Fetched extends Store {
    * @param {object} [options={}]
    */
   patch(body, options = {}) {
-    this.loading = true;
+    this.setLoading(true);
     this.error = null;
     this.settings
       .patcher(this.url, body, { ...this.options, ...options })
@@ -185,7 +189,7 @@ export class Fetched extends Store {
         }
         this.set(result);
       })
-      .finally(() => (this.loading = false));
+      .finally(() => this.setLoading(false));
   }
 
   /**
@@ -193,7 +197,7 @@ export class Fetched extends Store {
    * @param {object} [options={}]
    */
   put(body, options = {}) {
-    this.loading = true;
+    this.setLoading(true);
     this.error = null;
     this.settings
       .putter(this.url, body, { ...this.options, ...options })
@@ -205,14 +209,14 @@ export class Fetched extends Store {
         }
         this.set(result);
       })
-      .finally(() => (this.loading = false));
+      .finally(() => this.setLoading(false));
   }
 
   /**
    * @param {object} [options={}]
    */
   delete(options = {}) {
-    this.loading = true;
+    this.setLoading(true);
     this.error = null;
     this.settings
       .deleter(this.url, { ...this.options, ...options })
@@ -224,7 +228,7 @@ export class Fetched extends Store {
         }
         this.set(result);
       })
-      .finally(() => (this.loading = false));
+      .finally(() => this.setLoading(false));
   }
 
   /**
@@ -232,6 +236,21 @@ export class Fetched extends Store {
    */
   catch(closure) {
     this.catchers.push(closure);
+  }
+
+  /**
+   * @param {Loader} closure
+   */
+  load(closure) {
+    this.loaders.push(closure);
+  }
+
+  /**
+   * @param {boolean} value
+   */
+  setLoading(value) {
+    this.loading = value;
+    this.loaders.map((closure) => closure(value));
   }
 
   /**
