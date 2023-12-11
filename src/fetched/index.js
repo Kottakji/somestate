@@ -100,7 +100,7 @@ export class Fetched extends Store {
     this.options = options;
     this.catchers = [];
     this.loaders = [];
-    this.loading = false;
+    this.loading = true;
     this.error = null;
 
     /**
