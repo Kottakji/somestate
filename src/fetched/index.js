@@ -97,6 +97,7 @@ export class Fetched extends Store {
     this.options = options;
     this.catchers = [];
     this.loading = false;
+    this.error = null;
 
     /**
      * @type {Listener[]}
@@ -132,13 +133,17 @@ export class Fetched extends Store {
   fetch(options = {}) {
     if (this.hasTruthyDependencies()) {
       this.loading = true;
+      this.error = null;
       this.settings
         .fetcher(this.url, { ...this.options, ...options })
-        .then((result) =>
-          result instanceof Error
-            ? this.catchers.map((catcher) => catcher(result))
-            : this.set(result),
-        )
+        .then((result) => {
+          if (result instanceof Error) {
+            this.error = result;
+            this.catchers.map((catcher) => catcher(result));
+            return;
+          }
+          this.set(result);
+        })
         .finally(() => (this.loading = false));
     }
   }
@@ -149,9 +154,17 @@ export class Fetched extends Store {
    */
   post(body, options = {}) {
     this.loading = true;
+    this.error = null;
     this.settings
       .poster(this.url, body, { ...this.options, ...options })
-      .then((result) => this.set(result))
+      .then((result) => {
+        if (result instanceof Error) {
+          this.error = result;
+          this.catchers.map((catcher) => catcher(result));
+          return;
+        }
+        this.set(result);
+      })
       .finally(() => (this.loading = false));
   }
 
@@ -161,9 +174,17 @@ export class Fetched extends Store {
    */
   patch(body, options = {}) {
     this.loading = true;
+    this.error = null;
     this.settings
       .patcher(this.url, body, { ...this.options, ...options })
-      .then((result) => this.set(result))
+      .then((result) => {
+        if (result instanceof Error) {
+          this.error = result;
+          this.catchers.map((catcher) => catcher(result));
+          return;
+        }
+        this.set(result);
+      })
       .finally(() => (this.loading = false));
   }
 
@@ -173,9 +194,17 @@ export class Fetched extends Store {
    */
   put(body, options = {}) {
     this.loading = true;
+    this.error = null;
     this.settings
       .putter(this.url, body, { ...this.options, ...options })
-      .then((result) => this.set(result))
+      .then((result) => {
+        if (result instanceof Error) {
+          this.error = result;
+          this.catchers.map((catcher) => catcher(result));
+          return;
+        }
+        this.set(result);
+      })
       .finally(() => (this.loading = false));
   }
 
@@ -184,9 +213,17 @@ export class Fetched extends Store {
    */
   delete(options = {}) {
     this.loading = true;
+    this.error = null;
     this.settings
       .deleter(this.url, { ...this.options, ...options })
-      .then((result) => this.set(result))
+      .then((result) => {
+        if (result instanceof Error) {
+          this.error = result;
+          this.catchers.map((catcher) => catcher(result));
+          return;
+        }
+        this.set(result);
+      })
       .finally(() => (this.loading = false));
   }
 
