@@ -96,6 +96,7 @@ export class Fetched extends Store {
     this.url = url;
     this.options = options;
     this.catchers = [];
+    this.loading = false;
 
     /**
      * @type {Listener[]}
@@ -129,14 +130,17 @@ export class Fetched extends Store {
    * @param {object} [options={}]
    */
   fetch(options = {}) {
-    this.hasTruthyDependencies() &&
+    if (this.hasTruthyDependencies()) {
+      this.loading = true;
       this.settings
-        .fetcher(this.url, {...this.options, ...options})
+        .fetcher(this.url, { ...this.options, ...options })
         .then((result) =>
           result instanceof Error
             ? this.catchers.map((catcher) => catcher(result))
             : this.set(result),
-        );
+        )
+        .finally(() => (this.loading = false));
+    }
   }
 
   /**
@@ -144,9 +148,11 @@ export class Fetched extends Store {
    * @param {object} [options={}]
    */
   post(body, options = {}) {
+    this.loading = true;
     this.settings
-      .poster(this.url, body, {...this.options, ...options})
-      .then((result) => this.set(result));
+      .poster(this.url, body, { ...this.options, ...options })
+      .then((result) => this.set(result))
+      .finally(() => (this.loading = false));
   }
 
   /**
@@ -154,9 +160,11 @@ export class Fetched extends Store {
    * @param {object} [options={}]
    */
   patch(body, options = {}) {
+    this.loading = true;
     this.settings
-    .patcher(this.url, body, {...this.options, ...options})
-      .then((result) => this.set(result));
+      .patcher(this.url, body, { ...this.options, ...options })
+      .then((result) => this.set(result))
+      .finally(() => (this.loading = false));
   }
 
   /**
@@ -164,16 +172,22 @@ export class Fetched extends Store {
    * @param {object} [options={}]
    */
   put(body, options = {}) {
+    this.loading = true;
     this.settings
-      .putter(this.url, body, {...this.options, ...options})
-      .then((result) => this.set(result));
+      .putter(this.url, body, { ...this.options, ...options })
+      .then((result) => this.set(result))
+      .finally(() => (this.loading = false));
   }
 
   /**
    * @param {object} [options={}]
    */
   delete(options = {}) {
-    this.settings.deleter(this.url, {...this.options, ...options}).then((result) => this.set(result));
+    this.loading = true;
+    this.settings
+      .deleter(this.url, { ...this.options, ...options })
+      .then((result) => this.set(result))
+      .finally(() => (this.loading = false));
   }
 
   /**
