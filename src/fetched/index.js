@@ -254,6 +254,9 @@ export class Fetched extends Store {
   clear() {
     // Clear dependency listeners
     this.dependencyListeners.map((listener) => listener.unsubscribe());
+
+    // Clear catchers
+    this.catchers = [];
   }
 }
 
