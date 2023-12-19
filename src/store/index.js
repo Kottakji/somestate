@@ -42,10 +42,7 @@ export class Store {
    */
   set(newValue) {
     // Keep the old value for comparison
-    const oldValue =
-      typeof this.value === "object"
-        ? Object.assign({}, this.value)
-        : structuredClone(this.value);
+    const oldValue = cloneValue(this.value);
 
     // Only update when not the same
     if (equals(oldValue, newValue)) return;
@@ -112,7 +109,8 @@ export class Store {
    *
    * @return {void} - No value is returned.
    */
-  clear() {}
+  clear() {
+  }
 }
 
 /**
@@ -149,6 +147,22 @@ function generateId() {
   });
 }
 
+function cloneValue(value) {
+  if (isClass(value)) {
+    return Object.assign(Object.create(Object.getPrototypeOf(value)), value);
+  }
+
+  if (value === "object") {
+    return Object.assign({}, value);
+  }
+
+  return structuredClone(value);
+}
+
 function equals(a, b) {
   return JSON.stringify(a) === JSON.stringify(b);
+}
+
+function isClass(value) {
+  return typeof value === "function" && value.prototype !== undefined;
 }
