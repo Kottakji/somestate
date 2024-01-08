@@ -119,13 +119,16 @@ export class Fetched extends Store {
 
     // Should we refetch at x interval?
     if (settings?.refetchInterval) {
-      setInterval(() => this.fetch(options), settings.refetchInterval);
+      setInterval(
+        () => this.fetch(this.getOptions()),
+        settings.refetchInterval,
+      );
     }
 
     // Listen to each dependency change (if it's a store)
     this.settings.dependencies.map((dependency) => {
       if (dependency instanceof Store) {
-        const listener = dependency.listen(() => this.fetch(options));
+        const listener = dependency.listen(() => this.fetch(this.getOptions()));
         this.dependencyListeners.push(listener);
       }
     });
@@ -260,7 +263,17 @@ export class Fetched extends Store {
    */
   hasTruthyDependencies() {
     return this.settings.dependencies.every((dependency) => {
-      const value = dependency instanceof Store ? dependency.get() : dependency;
+      let value = dependency;
+      switch (true) {
+        case dependency instanceof Store:
+          value = dependency.get();
+          break;
+        case dependency instanceof Fetched:
+          // Return loading, because we want to be able to return an empty object from api calls {}
+          value = !dependency.loading;
+          break;
+      }
+
       if (Array.isArray(value)) {
         return value.length > 0;
       }
