@@ -78,7 +78,7 @@ const defaultSettings = {
  * Creates a Store class and fetches data from the specified URL.
  *
  * @param {string} url - The URL to fetch data from.
- * @param {object} [options={}] - The fetch options to be passed to the fetcher function.
+ * @param {object|closure} [options={}] - The fetch options to be passed to the fetcher function, or a closure returning the options.
  * @param {Settings} [settings={}] - The settings object containing the fetcher and other helper methods.
  * @returns {Fetched} - A Store instance containing the fetched data.
  */
@@ -115,7 +115,7 @@ export class Fetched extends Store {
     this.settings = { ...defaultSettings, ...settings };
 
     // Instantly call fetcher to set data
-    this.fetch(options);
+    this.fetch(this.getOptions());
 
     // Should we refetch at x interval?
     if (settings?.refetchInterval) {
@@ -139,7 +139,7 @@ export class Fetched extends Store {
       this.setLoading(true);
       this.error = null;
       this.settings
-        .fetcher(this.url, { ...this.options, ...options })
+        .fetcher(this.url, { ...this.getOptions(), ...options })
         .then((result) => {
           if (result instanceof Error) {
             this.error = result;
@@ -160,7 +160,7 @@ export class Fetched extends Store {
     this.setLoading(true);
     this.error = null;
     this.settings
-      .poster(this.url, body, { ...this.options, ...options })
+      .poster(this.url, body, { ...this.getOptions(), ...options })
       .then((result) => {
         if (result instanceof Error) {
           this.error = result;
@@ -180,7 +180,7 @@ export class Fetched extends Store {
     this.setLoading(true);
     this.error = null;
     this.settings
-      .patcher(this.url, body, { ...this.options, ...options })
+      .patcher(this.url, body, { ...this.getOptions(), ...options })
       .then((result) => {
         if (result instanceof Error) {
           this.error = result;
@@ -200,7 +200,7 @@ export class Fetched extends Store {
     this.setLoading(true);
     this.error = null;
     this.settings
-      .putter(this.url, body, { ...this.options, ...options })
+      .putter(this.url, body, { ...this.getOptions(), ...options })
       .then((result) => {
         if (result instanceof Error) {
           this.error = result;
@@ -219,7 +219,7 @@ export class Fetched extends Store {
     this.setLoading(true);
     this.error = null;
     this.settings
-      .deleter(this.url, { ...this.options, ...options })
+      .deleter(this.url, { ...this.getOptions(), ...options })
       .then((result) => {
         if (result instanceof Error) {
           this.error = result;
@@ -271,6 +271,17 @@ export class Fetched extends Store {
 
       return !!value;
     });
+  }
+
+  /**
+   * @return {object}
+   */
+  getOptions() {
+    if (typeof this.options === "function") {
+      return this.options();
+    }
+
+    return this.options;
   }
 
   /**

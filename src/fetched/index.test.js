@@ -270,4 +270,28 @@ describe("Fetched", () => {
     // This should invoke the fetcher to refetch
     $dependency.set(true);
   });
+
+  test("We can get the options from a closure, so we can have store value in there", (done) => {
+    const spy = jest.spyOn(global, "fetch");
+    const $dependency = store(false);
+    const $fetched = fetched(
+      `https://jsonplaceholder.typicode.com/todos/1`, // Doesn't return any data
+      () => ({
+        "x-example": $dependency.get(),
+      }),
+      {
+        dependencies: [$dependency],
+      },
+    );
+
+    $fetched.listen(() => {
+      const [url, headers] = spy.mock.calls.pop();
+      if (headers["x-example"] === "example") {
+        done();
+      }
+    });
+
+    // This should invoke the fetcher to refetch
+    $dependency.set("example");
+  });
 });
