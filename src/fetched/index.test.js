@@ -243,4 +243,31 @@ describe("Fetched", () => {
     $todo.clear();
     expect($dependency.listeners.length).toEqual(1);
   });
+
+  test("We can have a dependency on another fetched store", (done) => {
+    const $dependency = store(false);
+    const $otherFetched = fetched(
+      `https://jsonplaceholder.typicode.com/todos/11111111111`, // Doesn't return any data
+      {},
+      { dependencies: [$dependency] },
+    );
+    const $todo = fetched(
+      `https://jsonplaceholder.typicode.com/todos/1`,
+      {},
+      { dependencies: [$dependency, $otherFetched] },
+    );
+
+    expect($todo.get()).toEqual({});
+
+    $otherFetched.catch(() => {
+      done();
+    });
+
+    $todo.listen(() => {
+      throw new Error(`Shouldn't have been updated`);
+    });
+
+    // This should invoke the fetcher to refetch
+    $dependency.set(true);
+  });
 });

@@ -259,10 +259,18 @@ export class Fetched extends Store {
    * @returns {boolean}
    */
   hasTruthyDependencies() {
-    return this.settings.dependencies.every(
-      (dependency) =>
-        !!(dependency instanceof Store ? dependency.get() : dependency),
-    );
+    return this.settings.dependencies.every((dependency) => {
+      const value = dependency instanceof Store ? dependency.get() : dependency;
+      if (Array.isArray(value)) {
+        return value.length > 0;
+      }
+
+      if (typeof value === "object" && value !== null) {
+        return Object.keys(value).length > 0;
+      }
+
+      return !!value;
+    });
   }
 
   /**
