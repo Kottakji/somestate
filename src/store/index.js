@@ -109,8 +109,7 @@ export class Store {
    *
    * @return {void} - No value is returned.
    */
-  clear() {
-  }
+  clear() {}
 }
 
 /**
@@ -152,8 +151,12 @@ function cloneValue(value) {
     return Object.assign(Object.create(Object.getPrototypeOf(value)), value);
   }
 
-  if (value === "object") {
+  if (typeof value === "object") {
     return Object.assign({}, value);
+  }
+
+  if (typeof value === "function") {
+    return value;
   }
 
   return structuredClone(value);
