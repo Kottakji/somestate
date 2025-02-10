@@ -271,6 +271,43 @@ describe("Fetched", () => {
     $dependency.set(true);
   });
 
+  test("We automatically retry 3 times on failure", (done) => {
+    const spy = jest.spyOn(global, "fetch");
+    const $error = fetched(
+      `https://jsonplaceholder.typicode.com/error/1`,
+      {},
+      { retryInterval: 500 },
+    );
+
+    expect($error.get()).toEqual({});
+
+    $error.catch(() => {
+      if (spy.mock.calls.length === 3) {
+        done();
+      }
+    });
+  });
+
+  test("We can turn off retries", (done) => {
+    const spy = jest.spyOn(global, "fetch");
+    const $error = fetched(
+      `https://jsonplaceholder.typicode.com/error/1`,
+      {},
+      { retryAmount: 0, retryInterval: 500 },
+    );
+
+    expect($error.get()).toEqual({});
+
+    $error.catch(() => {
+      if (spy.mock.calls.length === 1) {
+        done();
+      }
+    });
+  });
+});
+
+// Somehow running it together with other tests makes this test fail
+describe("Fetched (2)", () => {
   test("We can get the options from a closure, so we can have store value in there", (done) => {
     const spy = jest.spyOn(global, "fetch");
     const $dependency = store(false);

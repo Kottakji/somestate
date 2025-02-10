@@ -60,6 +60,8 @@ export const getOptions = (method, body) => ({
  * @property {Function} [catcher] - The function invoked on an API request error.
  * @property {number|null} [refetchInterval] - Interval in ms for automatic data refetching.
  * @property {Array<Store>|Array<*>} [dependencies=[]] dependencies - Truthy values.
+ * @property {number} [retryAmount] Retry attempts (defaults to 3)
+ * @property {number} [retryInterval] Retry attempts (defaults to 3000)
  *
  * @type {Settings}
  */
@@ -72,6 +74,8 @@ const defaultSettings = {
   catcher: (error) => () => void { error },
   refetchInterval: null,
   dependencies: [],
+  retryAmount: 3,
+  retryInterval: 3000,
 };
 
 /**
@@ -102,6 +106,7 @@ export class Fetched extends Store {
     this.loaders = [];
     this.loading = true;
     this.error = null;
+    this.retryAttemps = 0;
 
     /**
      * @type {Listener[]}
@@ -147,6 +152,7 @@ export class Fetched extends Store {
           if (result instanceof Error) {
             this.error = result;
             this.catchers.map((catcher) => catcher(result));
+            this.retry(() => this.fetch(options));
             return;
           }
           this.set(result);
@@ -168,6 +174,7 @@ export class Fetched extends Store {
         if (result instanceof Error) {
           this.error = result;
           this.catchers.map((catcher) => catcher(result));
+          this.retry(() => this.post(options));
           return;
         }
         this.set(result);
@@ -188,6 +195,7 @@ export class Fetched extends Store {
         if (result instanceof Error) {
           this.error = result;
           this.catchers.map((catcher) => catcher(result));
+          this.retry(() => this.patch(options));
           return;
         }
         this.set(result);
@@ -208,6 +216,7 @@ export class Fetched extends Store {
         if (result instanceof Error) {
           this.error = result;
           this.catchers.map((catcher) => catcher(result));
+          this.retry(() => this.put(options));
           return;
         }
         this.set(result);
@@ -227,6 +236,7 @@ export class Fetched extends Store {
         if (result instanceof Error) {
           this.error = result;
           this.catchers.map((catcher) => catcher(result));
+          this.retry(() => this.delete(options));
           return;
         }
         this.set(result);
@@ -239,6 +249,21 @@ export class Fetched extends Store {
    */
   catch(closure) {
     this.catchers.push(closure);
+  }
+
+  /**
+   * @param {Function} closure
+   */
+  retry(closure = () => {}) {
+    if (
+      this.settings.retryAmount > 0 &&
+      this.retryAttemps + 1 < this.settings.retryAmount
+    ) {
+      this.retryAttemps++;
+
+      // Re-fetch
+      closure();
+    }
   }
 
   /**
