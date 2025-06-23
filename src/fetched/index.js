@@ -262,7 +262,7 @@ export class Fetched extends Store {
       this.retryAttemps++;
 
       // Re-fetch
-      closure();
+      setTimeout(() => void closure(), this.settings.retryInterval);
     }
   }
 
