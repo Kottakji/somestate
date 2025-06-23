@@ -10,17 +10,22 @@ import { Store } from "../store/index.js";
  * @returns {Promise} - A Promise that resolves to the parsed JSON response.
  */
 export const getFetcher = async (url, method, body, options) => {
-  const response = await fetch(url, {
-    ...getOptions(method, body),
-    ...options,
-  });
-  const data = await response.json();
+  try {
+    const response = await fetch(url, {
+      ...getOptions(method, body),
+      ...options,
+    });
 
-  if (!response.ok) {
-    return new Error(response.status, data);
+    const data = await response.json();
+
+    if (!response.ok) {
+      return new Error(response.status, data);
+    }
+
+    return data;
+  } catch (exception) {
+    return new Error(500, {});
   }
-
-  return data;
 };
 
 /**
@@ -74,7 +79,7 @@ const defaultSettings = {
   catcher: (error) => () => void { error },
   refetchInterval: null,
   dependencies: [],
-  retryAmount: 3,
+  retryAmount: 5,
   retryInterval: 3000,
 };
 
